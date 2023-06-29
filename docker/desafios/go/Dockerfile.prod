@@ -1,0 +1,16 @@
+# https://aprendagolang.com.br/2022/07/13/como-diminuir-o-tamanho-da-sua-aplicacao-com-ldflags/
+FROM golang AS builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN go build -ldflags '-s -w' main.go
+
+FROM scratch
+
+WORKDIR /app
+
+COPY --from=builder /app .
+
+CMD ["./main"]
