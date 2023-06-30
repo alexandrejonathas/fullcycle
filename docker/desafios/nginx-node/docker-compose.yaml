@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  proxy:
+    image: alexandrejonathas/desafio-fc-nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    
+    ports:
+      - 80:80
+
+    networks:
+      - fcnet
+
+    depends_on:
+      - app  
+
+  app:
+    image: node:15
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+
+    expose:
+      - 3000
+
+    networks:
+      - fcnet
+
+    depends_on:
+      - db
+
+  db:
+    image: alexandrejonathas/fc-desafio-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nodedb
+
+    command: --innodb-use-native-aio=0    
+    
+    networks:
+      - fcnet
+networks:
+  fcnet:
+    driver: bridge  
