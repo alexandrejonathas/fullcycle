@@ -18,7 +18,6 @@ app.get('/', (req, res) => {
     const conn = mysql.createConnection(config);
     conn.query(`insert into people(nome) values ('Jonathas Lima')`);
     //conn.commit();
-
     
     let html = '<h1>Full Cycle Rocks!!</h1>';
 

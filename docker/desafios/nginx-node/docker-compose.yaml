@@ -3,44 +3,54 @@ version: '3'
 services:
   proxy:
     image: alexandrejonathas/desafio-fc-nginx
+    container_name: proxy
     build:
       context: ./nginx
       dockerfile: Dockerfile
     
+    command: ["wait-for-it.sh", "app:3000", "-t", "60", "--", "nginx", "-g", "daemon off;"]
+
     ports:
       - 80:80
 
     networks:
-      - fcnet
-
-    depends_on:
-      - app  
+      - fcnet  
 
   app:
-    image: node:15
+    image: alexandrejonathas/desafio-fc-node
+    container_name: app
     build:
       context: ./node
       dockerfile: Dockerfile
-
-    expose:
-      - 3000
+    
+    command: ["./wait-for-it.sh", "db:3306", "-t", "40", "--", "docker-entrypoint.sh", "index.js"]
 
     networks:
       - fcnet
 
-    depends_on:
-      - db
+    volumes:
+      - "./node:/app"
 
   db:
-    image: alexandrejonathas/fc-desafio-db
+    image: alexandrejonathas/desafio-fc-db
+    container_name: db
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile    
+
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: nodedb
+      
+    command: --innodb-use-native-aio=0
+    restart: always
 
-    command: --innodb-use-native-aio=0    
-    
     networks:
       - fcnet
+
+    expose:
+      - 3306      
+
 networks:
   fcnet:
     driver: bridge  
