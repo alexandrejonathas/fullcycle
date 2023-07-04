@@ -1,4 +1,4 @@
-# Desafios Cursi Full Cycle
+# Desafios Curso Full Cycle
 
 ## Modulo Docker
 
